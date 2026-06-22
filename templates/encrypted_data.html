@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Encrypted Data - Homomorphic Attendance System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 mx-auto">
+        <h2 class="mb-4"><i class="fas fa-lock"></i> Encrypted Face Templates</h2>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-shield-alt"></i> Security Demonstration</h5>
+            </div>
+            <div class="card-body">
+                <p class="lead">This page demonstrates how face data is stored in encrypted form using homomorphic encryption, ensuring complete privacy and security.</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6><i class="fas fa-lock text-success"></i> Security Features:</h6>
+                                <ul class="mb-0">
+                                    <li>Face templates encrypted using CKKS homomorphic encryption</li>
+                                    <li>Matching occurs entirely in encrypted space</li>
+                                    <li>Raw face data never stored or transmitted</li>
+                                    <li>Privacy-preserving authentication</li>
+                                    <li>No biometric data exposure</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6><i class="fas fa-cog text-primary"></i> Technical Details:</h6>
+                                <ul class="mb-0">
+                                    <li><strong>Encryption:</strong> CKKS Scheme</li>
+                                    <li><strong>Poly Modulus Degree:</strong> 8192</li>
+                                    <li><strong>Face Vector Size:</strong> 64 features</li>
+                                    <li><strong>Security Level:</strong> 128-bit</li>
+                                    <li><strong>Operations:</strong> All on encrypted data</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-database"></i> Encrypted Face Templates
+                    <span class="badge bg-light text-dark ms-2" id="templatesCount">0 templates</span>
+                </h5>
+                <div>
+                    <button id="refreshTemplates" class="btn btn-light btn-sm">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="templatesLoading" class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading encrypted templates...</p>
+                </div>
+                <div id="templatesContent" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Below are the encrypted face templates stored in the database. 
+                        The actual face data is never decrypted - even during matching operations.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Encrypted Data Preview</th>
+                                    <th>Data Size</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="templatesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="templatesEmpty" class="text-center py-5" style="display: none;">
+                    <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No Encrypted Templates Found</h5>
+                    <p class="text-muted">No employees have been registered yet. Register employees to see encrypted templates.</p>
+                    <a href="{{ url_for('register_page') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Register Employee
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> How It Works</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-camera fa-2x text-primary mb-2"></i>
+                            <h6>1. Face Capture</h6>
+                            <small>Employee face is captured during registration</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-fingerprint fa-2x text-info mb-2"></i>
+                            <h6>2. Feature Extraction</h6>
+                            <small>64 facial features are extracted</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-lock fa-2x text-success mb-2"></i>
+                            <h6>3. Homomorphic Encryption</h6>
+                            <small>Features are encrypted using CKKS</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border rounded p-3">
+                            <i class="fas fa-database fa-2x text-secondary mb-2"></i>
+                            <h6>4. Secure Storage</h6>
+                            <small>Encrypted template stored in database</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const refreshBtn = document.getElementById('refreshTemplates');
+    const loadingDiv = document.getElementById('templatesLoading');
+    const contentDiv = document.getElementById('templatesContent');
+    const emptyDiv = document.getElementById('templatesEmpty');
+    const tableBody = document.getElementById('templatesTableBody');
+    const templatesCount = document.getElementById('templatesCount');
+
+    function loadTemplates() {
+        loadingDiv.style.display = 'block';
+        contentDiv.style.display = 'none';
+        emptyDiv.style.display = 'none';
+
+        fetch('/api/encrypted-templates')
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.style.display = 'none';
+                
+                if (data.status === 'success' && data.templates.length > 0) {
+                    displayTemplates(data.templates);
+                    contentDiv.style.display = 'block';
+                    emptyDiv.style.display = 'none';
+                } else {
+                    contentDiv.style.display = 'none';
+                    emptyDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loadingDiv.style.display = 'none';
+                contentDiv.style.display = 'none';
+                emptyDiv.style.display = 'block';
+                console.error('Error loading templates:', error);
+            });
+    }
+
+    function displayTemplates(templates) {
+        templatesCount.textContent = `${templates.length} templates`;
+        
+        tableBody.innerHTML = '';
+        templates.forEach(template => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${template.employee_id}</strong></td>
+                <td>${template.name}</td>
+                <td>${template.department}</td>
+                <td>
+                    <div class="encrypted-data">
+                        <code class="bg-light p-2 rounded d-block" style="font-size: 0.7em; word-break: break-all;">
+                            ${template.encrypted_data_preview}
+                        </code>
+                        <small class="text-muted">First 100 characters of encrypted data</small>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-info">${template.data_length} bytes</span>
+                </td>
+                <td>${template.created_date}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    refreshBtn.addEventListener('click', loadTemplates);
+    
+    // Initial load
+    loadTemplates();
+});
+</script>
+
+<style>
+.encrypted-data {
+    max-width: 300px;
+}
+</style>
+{% endblock %}

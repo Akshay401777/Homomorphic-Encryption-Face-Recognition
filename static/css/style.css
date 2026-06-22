@@ -1,0 +1,77 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hero-section {
+    padding: 3rem 0;
+}
+
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: none;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.camera-container {
+    position: relative;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+#video {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+#canvas {
+    display: none;
+}
+
+.photo-preview {
+    max-width: 200px;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+.status-success {
+    color: #198754;
+    font-weight: bold;
+}
+
+.status-error {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.loading-spinner {
+    display: none;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.attendance-record {
+    border-left: 4px solid #0d6efd;
+    padding-left: 15px;
+    margin-bottom: 15px;
+}
+
+.encryption-badge {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+}
